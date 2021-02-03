@@ -92,12 +92,29 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     }
 })
 function shieldup () {
-    statusbar2 = statusbars.create(1, 20, StatusBarKind.Energy)
-    statusbar2.attachToSprite(mySprite)
-    statusbar2.max = 100
-    statusbar2.value = 100
-    statusbar2.setColor(9, 15)
-    statusbar2.setOffsetPadding(0, -20)
+    mySprite.setImage(img`
+        ....................
+        ....................
+        ....................
+        ................9...
+        ..222222222222...99.
+        ..222222222222...98.
+        ..222222222222...98.
+        ..222522225222...98.
+        ..222222222222...98.
+        ..222222222222...98.
+        ..222222222222...98.
+        ..222222222222...98.
+        999999999999999..98.
+        9999999999999999.98.
+        9999999999999999.98.
+        999999999999999..99.
+        ................9...
+        ....................
+        ....................
+        ....................
+        `)
+    shielded = 1
 }
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Food, function (sprite, otherSprite) {
     otherSprite.destroy(effects.hearts, 200)
@@ -172,7 +189,7 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.powerup, function (sprite, other
     }
 })
 sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Enemy, function (sprite, otherSprite) {
-    sprite.destroy(effects.halo, 100)
+    sprite.destroy(effects.fire, 200)
     statusbars.getStatusBarAttachedTo(StatusBarKind.Health, otherSprite).value += randint(-99, -101)
     if (statusbars.getStatusBarAttachedTo(StatusBarKind.Health, otherSprite).value <= 0) {
         statusbars.getStatusBarAttachedTo(StatusBarKind.Health, otherSprite).spriteAttachedTo().destroy(effects.fire, 200)
@@ -185,10 +202,27 @@ sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Enemy, function (sprite, oth
     }
 })
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSprite) {
-    if (statusbar2.value > 0) {
+    if (shielded > 0) {
         otherSprite.destroy(effects.fire, 200)
-        statusbar2.value = 0
-        powerlevel += -1
+        shielded = 0
+        mySprite.setImage(img`
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . 2 2 2 2 2 2 2 2 2 2 2 2 . . 
+            . . 2 2 2 2 2 2 2 2 2 2 2 2 . . 
+            . . 2 2 2 2 2 2 2 2 2 2 2 2 . . 
+            . . 2 2 2 5 2 2 2 2 5 2 2 2 . . 
+            . . 2 2 2 2 2 2 2 2 2 2 2 2 . . 
+            . . 2 2 2 2 2 2 2 2 2 2 2 2 . . 
+            . . 2 2 2 2 2 2 2 2 2 2 2 2 . . 
+            . . 2 2 2 2 2 2 2 2 2 2 2 2 . . 
+            9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 . 
+            9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 
+            9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 
+            9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 . 
+            `)
     } else {
         sprite.destroy(effects.fire, 200)
         info.changeLifeBy(-1)
@@ -228,11 +262,11 @@ let mySprite4: Sprite = null
 let mySprite3: Sprite = null
 let statusbar: StatusBarSprite = null
 let mySprite2: Sprite = null
-let statusbar2: StatusBarSprite = null
 let mySprite: Sprite = null
 let projectile2: Sprite = null
 let textSprite: TextSprite = null
 let speed = 0
+let shielded = 0
 let powerlevel = 0
 let chests = 0
 effects.starField.startScreenEffect()
@@ -241,6 +275,7 @@ info.setLife(3)
 chests = 0
 let spawn_rate = 1000
 powerlevel = 0
+shielded = 0
 music.playMelody("G B A B C5 B A B ", 246)
 speed = -20
 textSprite = textsprite.create("x" + convertToText(chests), 15, 5)

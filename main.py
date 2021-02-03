@@ -106,14 +106,30 @@ def on_a_pressed():
 controller.A.on_event(ControllerButtonEvent.PRESSED, on_a_pressed)
 
 def shieldup():
-    global statusbar2
-    statusbar2 = statusbars.create(1, 20, StatusBarKind.energy)
-    statusbar2.attach_to_sprite(mySprite)
-    statusbar2.max = 100
-    statusbar2.value = 100
-    statusbar2.set_color(9, 15)
-    statusbar2.set_offset_padding(0, -20)
-
+    global shielded
+    mySprite.set_image(img("""
+        ....................
+                ....................
+                ....................
+                ................9...
+                ..222222222222...99.
+                ..222222222222...98.
+                ..222222222222...98.
+                ..222522225222...98.
+                ..222222222222...98.
+                ..222222222222...98.
+                ..222222222222...98.
+                ..222222222222...98.
+                999999999999999..98.
+                9999999999999999.98.
+                9999999999999999.98.
+                999999999999999..99.
+                ................9...
+                ....................
+                ....................
+                ....................
+    """))
+    shielded = 1
 
 def on_on_overlap(sprite, otherSprite):
     global chests
@@ -192,7 +208,7 @@ sprites.on_overlap(SpriteKind.player, SpriteKind.powerup, on_on_overlap2)
 
 def on_on_overlap3(sprite, otherSprite):
     global speed
-    sprite.destroy(effects.halo, 100)
+    sprite.destroy(effects.fire, 200)
     statusbars.get_status_bar_attached_to(StatusBarKind.health, otherSprite).value += randint(-99, -101)
     if statusbars.get_status_bar_attached_to(StatusBarKind.health, otherSprite).value <= 0:
         statusbars.get_status_bar_attached_to(StatusBarKind.health, otherSprite).sprite_attached_to().destroy(effects.fire, 200)
@@ -204,11 +220,28 @@ def on_on_overlap3(sprite, otherSprite):
 sprites.on_overlap(SpriteKind.projectile, SpriteKind.enemy, on_on_overlap3)
 
 def on_on_overlap4(sprite, otherSprite):
-    global powerlevel, mySprite
-    if statusbar2.value > 0:
+    global shielded, powerlevel, mySprite
+    if shielded > 0:
         otherSprite.destroy(effects.fire, 200)
-        statusbar2.value = 0
-        powerlevel += -1
+        shielded = 0
+        mySprite.set_image(img("""
+            . . . . . . . . . . . . . . . . 
+                        . . . . . . . . . . . . . . . . 
+                        . . . . . . . . . . . . . . . . 
+                        . . . . . . . . . . . . . . . . 
+                        . . 2 2 2 2 2 2 2 2 2 2 2 2 . . 
+                        . . 2 2 2 2 2 2 2 2 2 2 2 2 . . 
+                        . . 2 2 2 2 2 2 2 2 2 2 2 2 . . 
+                        . . 2 2 2 5 2 2 2 2 5 2 2 2 . . 
+                        . . 2 2 2 2 2 2 2 2 2 2 2 2 . . 
+                        . . 2 2 2 2 2 2 2 2 2 2 2 2 . . 
+                        . . 2 2 2 2 2 2 2 2 2 2 2 2 . . 
+                        . . 2 2 2 2 2 2 2 2 2 2 2 2 . . 
+                        9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 . 
+                        9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 
+                        9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 
+                        9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 .
+        """))
     else:
         sprite.destroy(effects.fire, 200)
         info.change_life_by(-1)
@@ -247,10 +280,11 @@ mySprite4: Sprite = None
 mySprite3: Sprite = None
 statusbar: StatusBarSprite = None
 mySprite2: Sprite = None
-statusbar2: StatusBarSprite = None
 mySprite: Sprite = None
 projectile2: Sprite = None
 textSprite: TextSprite = None
+speed = 0
+shielded = 0
 powerlevel = 0
 chests = 0
 effects.star_field.start_screen_effect()
@@ -259,6 +293,7 @@ info.set_life(3)
 chests = 0
 spawn_rate = 1000
 powerlevel = 0
+shielded = 0
 music.play_melody("G B A B C5 B A B ", 246)
 speed = -20
 textSprite = textsprite.create("x" + convert_to_text(chests), 15, 5)
@@ -316,29 +351,28 @@ def on_update_interval():
         mySprite3.set_flag(SpriteFlag.AUTO_DESTROY, False)
         makeShark()
         makeShark()
-    else:
-        if powerlevel <= 2 and Math.percent_chance(12):
-            mySprite4 = sprites.create(img("""
-                    . . . . . . . . . . . . . . . . 
-                                    . . . . . . 5 5 5 5 . . . . . . 
-                                    . . . . 5 5 5 5 5 5 5 5 . . . . 
-                                    . . . 5 5 5 5 5 5 5 5 5 5 . . . 
-                                    . . 5 5 5 5 5 5 5 5 5 5 5 5 . . 
-                                    . . 5 5 5 5 5 5 5 5 5 5 5 5 . . 
-                                    . 5 5 5 5 5 5 5 5 5 5 5 5 5 5 . 
-                                    . 5 5 5 5 5 5 5 5 5 5 5 5 5 5 . 
-                                    . 5 5 5 5 5 5 5 5 5 5 5 5 5 5 . 
-                                    . 5 5 5 5 5 5 5 5 5 5 5 5 5 5 . 
-                                    . . 5 5 5 5 5 5 5 5 5 5 5 5 . . 
-                                    . . 5 5 5 5 5 5 5 5 5 5 5 5 . . 
-                                    . . . 5 5 5 5 5 5 5 5 5 5 . . . 
-                                    . . . . 5 5 5 5 5 5 5 5 . . . . 
-                                    . . . . . . 5 5 5 5 . . . . . . 
-                                    . . . . . . . . . . . . . . . .
-                """),
-                SpriteKind.powerup)
-            mySprite4.x = 160
-            mySprite4.y = randint(20, 100)
-            mySprite4.set_velocity(-50, 0)
-            mySprite4.set_flag(SpriteFlag.AUTO_DESTROY, False)
+    elif powerlevel <= 2 and Math.percent_chance(12):
+        mySprite4 = sprites.create(img("""
+                . . . . . . . . . . . . . . . . 
+                            . . . . . . 5 5 5 5 . . . . . . 
+                            . . . . 5 5 5 5 5 5 5 5 . . . . 
+                            . . . 5 5 5 5 5 5 5 5 5 5 . . . 
+                            . . 5 5 5 5 5 5 5 5 5 5 5 5 . . 
+                            . . 5 5 5 5 5 5 5 5 5 5 5 5 . . 
+                            . 5 5 5 5 5 5 5 5 5 5 5 5 5 5 . 
+                            . 5 5 5 5 5 5 5 5 5 5 5 5 5 5 . 
+                            . 5 5 5 5 5 5 5 5 5 5 5 5 5 5 . 
+                            . 5 5 5 5 5 5 5 5 5 5 5 5 5 5 . 
+                            . . 5 5 5 5 5 5 5 5 5 5 5 5 . . 
+                            . . 5 5 5 5 5 5 5 5 5 5 5 5 . . 
+                            . . . 5 5 5 5 5 5 5 5 5 5 . . . 
+                            . . . . 5 5 5 5 5 5 5 5 . . . . 
+                            . . . . . . 5 5 5 5 . . . . . . 
+                            . . . . . . . . . . . . . . . .
+            """),
+            SpriteKind.powerup)
+        mySprite4.x = 160
+        mySprite4.y = randint(20, 100)
+        mySprite4.set_velocity(-50, 0)
+        mySprite4.set_flag(SpriteFlag.AUTO_DESTROY, False)
 game.on_update_interval(spawn_rate, on_update_interval)
