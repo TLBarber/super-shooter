@@ -135,6 +135,7 @@ function initialize_variables () {
     powerlevel = 0
     shielded = 0
     speed = -20
+    powerup_onscreen = 0
     textSprite = textsprite.create("x" + convertToText(chests), 15, 5)
     textSprite.setIcon(img`
         . . b b b b b b b b b b b b . . 
@@ -354,11 +355,13 @@ function pickupRapidFire (powerup: Sprite) {
             6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 
             `)
         autofire_indicator.setPosition(55, 8)
+        powerup_onscreen = 0
     } else {
         music.magicWand.play()
         powerup.destroy(effects.smiles, 200)
         autofire_indicator.setText("x1000")
         projectile_count = 0
+        powerup_onscreen = 0
     }
 }
 function pickupPowerup (player2: Sprite, powerup: Sprite) {
@@ -386,6 +389,7 @@ function pickupPowerup (player2: Sprite, powerup: Sprite) {
         mySprite5.setPosition(56, 108)
         powerup_counter = 0
         powerlevel = 1
+        powerup_onscreen = 0
     } else if (powerlevel == 1) {
         mySprite5.destroy()
         quadfire = sprites.create(img`
@@ -409,8 +413,11 @@ function pickupPowerup (player2: Sprite, powerup: Sprite) {
         quadfire.setPosition(56, 108)
         powerup_counter = 0
         powerlevel = 2
+        powerup_onscreen = 0
     } else {
+        mySprite5.destroy()
         powerup_counter = 0
+        powerup_onscreen = 0
     }
 }
 function enemyGetsShot (projectile: Sprite, enemy: Sprite) {
@@ -420,7 +427,7 @@ function enemyGetsShot (projectile: Sprite, enemy: Sprite) {
         statusbars.getStatusBarAttachedTo(StatusBarKind.Health, enemy).spriteAttachedTo().destroy(effects.fire, 200)
         music.jumpDown.play()
         info.changeScoreBy(10)
-        if (info.score() % 100 == 0 && speed > -200) {
+        if (info.score() % 100 == 0) {
             speed += -20
         }
     }
@@ -465,7 +472,8 @@ function shieldup (shieldsprite: Sprite) {
         ....................
         `)
     shielded = 1
-    shieldsprite.destroy(effects.rings, 500)
+    shieldsprite.destroy(effects.rings, 100)
+    powerup_onscreen = 0
 }
 function makePowerups () {
     if (Math.percentChance(10)) {
@@ -493,7 +501,7 @@ function makePowerups () {
         mySprite3.setFlag(SpriteFlag.AutoDestroy, true)
         makeShark()
         makeShark()
-    } else if (powerlevel < 2 && Math.percentChance(10)) {
+    } else if (powerlevel < 2 && (powerup_onscreen == 0 && Math.percentChance(10))) {
         mySprite4 = sprites.create(img`
             . . . . . . . . . . . . . . . . 
             . . . . . . 5 5 5 5 . . . . . . 
@@ -516,7 +524,8 @@ function makePowerups () {
         mySprite4.y = randint(20, 100)
         mySprite4.setVelocity(-50, 0)
         mySprite4.setFlag(SpriteFlag.AutoDestroy, true)
-    } else if (Math.percentChance(10) && shielded == 0) {
+        powerup_onscreen = 1
+    } else if (powerup_onscreen == 0 && Math.percentChance(10) && shielded == 0) {
         mySprite4 = sprites.create(img`
             . . . . . . . . . . . . . . . . 
             . . . . . . 6 6 6 6 . . . . . . 
@@ -539,10 +548,9 @@ function makePowerups () {
         mySprite4.y = randint(20, 100)
         mySprite4.setVelocity(-50, 0)
         mySprite4.setFlag(SpriteFlag.AutoDestroy, true)
-    } else {
-    	
+        powerup_onscreen = 1
     }
-    if (Math.percentChance(1)) {
+    if (powerup_onscreen == 0 && Math.percentChance(1)) {
         autofire_sprite = sprites.create(img`
             6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 
             6 9 9 9 6 6 9 9 9 9 6 6 9 9 9 6 
@@ -564,6 +572,7 @@ function makePowerups () {
         autofire_sprite.x = 160
         autofire_sprite.setVelocity(-50, 0)
         autofire_sprite.setFlag(SpriteFlag.AutoDestroy, false)
+        powerup_onscreen = 1
     }
 }
 sprites.onOverlap(SpriteKind.clearenemies, SpriteKind.autofire_power, function (sprite, otherSprite) {
@@ -651,7 +660,6 @@ function enemyCollision (player2: Sprite, enemy: Sprite) {
         player2.destroy(effects.fire, 200)
         music.wawawawaa.play()
         clearScreen()
-        speed = speed / 2
         if (info.life() > 0) {
             if (1 == powerlevel) {
                 powerlevel = 0
@@ -836,6 +844,7 @@ let firedelay = 0
 let projectile_count = 0
 let autofire = 0
 let textSprite: TextSprite = null
+let powerup_onscreen = 0
 let speed = 0
 let shielded = 0
 let spawn_rate = 0
