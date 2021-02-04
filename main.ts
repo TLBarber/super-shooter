@@ -201,7 +201,7 @@ function pickupRapidFire (powerup: Sprite) {
             6 9 9 9 6 6 9 9 9 9 6 6 9 9 9 6 
             6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 
             `)
-        autofire_indicator.setPosition(49, 8)
+        autofire_indicator.setPosition(55, 8)
     } else {
         music.magicWand.play()
         powerup.destroy(effects.smiles, 200)
@@ -283,8 +283,8 @@ function makePowerups () {
         mySprite3.setFlag(SpriteFlag.AutoDestroy, false)
         makeShark()
         makeShark()
-    } else if (powerlevel <= 2 && shielded == 0 && Math.percentChance(12)) {
-        if (powerlevel == 2) {
+    } else if (powerlevel <= 2 && Math.percentChance(10)) {
+        if (powerlevel == 2 && shielded == 0) {
             mySprite4 = sprites.create(img`
                 . . . . . . . . . . . . . . . . 
                 . . . . . . 6 6 6 6 . . . . . . 
