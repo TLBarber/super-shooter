@@ -222,7 +222,7 @@ function pickupPowerup (player2: Sprite, powerup: Sprite) {
 }
 function enemyGetsShot (projectile: Sprite, enemy: Sprite) {
     projectile.destroy(effects.fire, 200)
-    statusbars.getStatusBarAttachedTo(StatusBarKind.Health, enemy).value += randint(-99, -101)
+    statusbars.getStatusBarAttachedTo(StatusBarKind.Health, enemy).value += randint(-1, -2)
     if (statusbars.getStatusBarAttachedTo(StatusBarKind.Health, enemy).value <= 0) {
         statusbars.getStatusBarAttachedTo(StatusBarKind.Health, enemy).spriteAttachedTo().destroy(effects.fire, 200)
         music.jumpDown.play()
@@ -535,6 +535,7 @@ function makeShark () {
         .............fffff..............
         `, SpriteKind.Enemy)
     statusbar = statusbars.create(20, 4, StatusBarKind.Health)
+    statusbar.max = 2
     statusbar.attachToSprite(mySprite2, 5, 0)
     mySprite2.x = 160
     mySprite2.y = randint(20, 100)
