@@ -420,7 +420,7 @@ function enemyGetsShot (projectile: Sprite, enemy: Sprite) {
         statusbars.getStatusBarAttachedTo(StatusBarKind.Health, enemy).spriteAttachedTo().destroy(effects.fire, 200)
         music.jumpDown.play()
         info.changeScoreBy(10)
-        if (info.score() % 100 == 0) {
+        if (info.score() % 100 == 0 && speed > -200) {
             speed += -20
         }
     }
@@ -651,6 +651,7 @@ function enemyCollision (player2: Sprite, enemy: Sprite) {
         player2.destroy(effects.fire, 200)
         music.wawawawaa.play()
         clearScreen()
+        speed = speed / 2
         if (info.life() > 0) {
             if (1 == powerlevel) {
                 powerlevel = 0
